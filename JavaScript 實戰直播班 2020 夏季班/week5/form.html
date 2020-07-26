@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue-validation</title>
+
+    <!-- CSS only -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- jsdelivr cdn -->
+    <!--script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script-->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vee-validate/3.3.0/vee-validate.full.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="container">
+        <!-- Content here -->
+
+        <!-- validation-observer 驗證整體表單 -->
+        <validation-observer v-slot="{ invalid }">
+          <!-- 表單送出改為使用 form submit 的方法 -->
+          <form @submit.prevent="submitForm">
+            <validation-provider rules="required" v-slot="{ errors, classes }">
+              <label for="username">收件人姓名</label>
+              <input
+                type="text"
+                class="form-control"
+                name="username"
+                v-model="username"
+                :class="classes"
+              />
+              <span class="invalid-feedback">{{ errors[0] }}</span>
+            </validation-provider>
+
+            <validation-provider
+              rules="required|email"
+              v-slot="{ errors, classes }"
+            >
+              <!-- 輸入框 -->
+              <label for="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                v-model="email"
+                class="form-control"
+                :class="classes"
+              />
+              <!-- 錯誤訊息 -->
+              <span class="invalid-feedback">{{ errors[0] }}</span>
+            </validation-provider>
+
+            <validation-provider
+              rules="required|min:8"
+              v-slot="{ errors, classes }"
+            >
+              <!-- 輸入框 -->
+              <label for="tel">電話</label>
+              <input
+                id="tel"
+                type="tel"
+                name="tel"
+                v-model="tel"
+                class="form-control"
+                :class="classes"
+              />
+              <!-- 錯誤訊息 -->
+              <span class="invalid-feedback">{{ errors[0] }}</span>
+            </validation-provider>
+
+            <validation-provider rules="required" v-slot="{ errors, classes }">
+              <!-- 輸入框 -->
+              <label for="address">地址</label>
+              <input
+                id="address"
+                type="text"
+                name="address"
+                v-model="address"
+                class="form-control"
+                :class="classes"
+              />
+              <!-- 錯誤訊息 -->
+              <span class="invalid-feedback">{{ errors[0] }}</span>
+            </validation-provider>
+
+            <validation-provider rules="required" v-slot="{ errors, classes }">
+              <label for="paymentMethod">購買方式</label>
+              <select
+                class="form-control"
+                id="paymentMethod"
+                name="paymentMethod"
+                v-model="paymentMethod"
+                class="form-control"
+              >
+                <option disabled value="">請選擇付款方式</option>
+                <option>WebATM</option>
+                <option>Barcode</option>
+                <option>Credit</option>
+                <option>ApplePay</option>
+                <option>GooglePay</option>
+              </select>
+            </validation-provider>
+
+            <!-- 輸入框 -->
+            <label for="comment">留言</label>
+            <textarea
+              rows="3"
+              id="comment"
+              type="text"
+              name="comment"
+              v-model="comment"
+              class="form-control"
+              :class="classes"
+            ></textarea>
+
+            <!-- 送出表單使用 submit 的方法，如果驗證未通過則 disabled 該按鈕 -->
+            <button type="submit" class="btn btn-primary" :disabled="invalid">
+              送出表單
+            </button>
+          </form>
+        </validation-observer>
+      </div>
+    </div>
+  </body>
+  <script type="module">
+    // 匯入語系檔案
+    import zh_TW from "./zh_TW.js";
+
+    // 加入至 VeeValidate 的設定檔案
+    VeeValidate.localize("tw", zh_TW);
+    // Add a rule.
+    VeeValidate.extend("secret", {
+      validate: (value) => value === "example",
+      message: "This is not the magic word",
+    });
+
+    // Class 設定檔案
+    VeeValidate.configure({
+      classes: {
+        valid: "is-valid",
+        invalid: "is-invalid",
+      },
+    });
+
+    // Register the component globally.
+    //Vue.component("ValidationProvider", VeeValidate.ValidationProvider);
+
+    Vue.component("ValidationProvider", VeeValidate.ValidationProvider);
+    //Vue.component("validation-provider", VeeValidate.ValidationProvider);
+
+    // 將 VeeValidate 完整表單 驗證工具載入 作為全域註冊
+    Vue.component("ValidationObserver", VeeValidate.ValidationObserver);
+
+    new Vue({
+      el: "#app",
+      data: {
+        username: "",
+        email: "",
+        tel: "",
+        address: "",
+        paymentMethod: "",
+        comment: "",
+      },
+    });
+  </script>
+</html>
